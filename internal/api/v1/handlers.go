@@ -8,17 +8,21 @@ import (
 	"go-poc/internal/application/models/place_order"
 	"net/http"
 
+	"go-poc/pkg/logrus"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
 type Handlers struct {
 	orderService application.OrderService
+	logger       logrus.Logger
 }
 
-func NewHandler(orderSrv application.OrderService) abstractions.Handlers {
+func NewHandler(orderSrv application.OrderService, logger logrus.Logger) abstractions.Handlers {
 	return &Handlers{
 		orderService: orderSrv,
+		logger:       logger,
 	}
 }
 
@@ -31,6 +35,9 @@ func (h *Handlers) PlaceOrder(c echo.Context) error {
 	validate := validator.New() //todo: bunu middleware olarak yapabilirim
 
 	if err := validate.Struct(request); err != nil {
+		h.logger.Log(err.Error(), &logrus.Configs{
+			Level: logrus.Error,
+		})
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 

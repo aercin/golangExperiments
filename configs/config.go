@@ -13,6 +13,11 @@ type Config struct {
 	Postgres      Postgres
 	BasketService BasketService
 	RabbitMQ      RabbitMQ
+	Log           Log
+}
+
+type Log struct {
+	Path string
 }
 
 type HttpServer struct {

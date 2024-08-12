@@ -7,6 +7,7 @@ import (
 	app_abstraction "go-poc/internal/application/abstractions"
 	"go-poc/internal/infrastructure/persistence"
 	"go-poc/internal/infrastructure/services"
+	"go-poc/pkg/logrus"
 	"go-poc/pkg/rabbitMQ"
 )
 
@@ -15,7 +16,8 @@ func ResolveHandler(config *configs.Config) api_abstraction.Handlers {
 	orderRepository := persistence.NewOrderRepository(db)
 	inboxRepository := persistence.NewInboxRepository(db)
 	orderService := services.NewOrderService(orderRepository, inboxRepository, config)
-	return v1.NewHandler(orderService)
+	logger, _ := logrus.NewLogger(logrus.Info, logrus.NewFileHook(config.Log.Path))
+	return v1.NewHandler(orderService, logger)
 }
 
 func ResolveEventDispatcher(config *configs.Config) app_abstraction.EventDispatcher {
